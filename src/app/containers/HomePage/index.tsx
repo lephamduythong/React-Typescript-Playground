@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../NavBar';
 import { Masthead } from './Masthead';
@@ -14,9 +14,19 @@ let peopleList = [
   { id: '789', name: 'Luong', age: 26 },
 ];
 
-type StyledPersonWrapperProps = {
-  textColor: string;
-};
+const StyledPerson = styled(Person)`
+  background-color: #ff007f;
+  margin-top: 10px;
+  color: ${props => props.textColor};
+`;
+
+const StyledButtonWrapper = styled.div<{ buttonColor: string }>`
+  button {
+    background-color: ${props => props.buttonColor};
+    color: white;
+    padding: 10px;
+  }
+`;
 
 export function HomePage() {
   // React hooks
@@ -25,20 +35,6 @@ export function HomePage() {
     isShow: false,
     buttonColor: 'red',
   });
-
-  const StyledPersonWrapper = styled.div<StyledPersonWrapperProps>`
-    background-color: #ff007f;
-    margin-top: 10px;
-    color: white;
-  `;
-
-  const StyledButtonWrapper = styled.div`
-    button {
-      background-color: ${peopleState.buttonColor};
-      color: white;
-      padding: 10px;
-    }
-  `;
 
   const toggleShow = () => {
     setPeopleState({
@@ -68,17 +64,16 @@ export function HomePage() {
       <div>
         {peopleState.people.map((person, index) => {
           return (
-            <StyledPersonWrapper textColor="white">
-              <Person
-                key={`person-${person.id}`}
-                name={person.name}
-                age={person.age}
-                inputChange={inputChange.bind(null, index)}
-                deletePerson={deletePerson.bind(null, index)}
-              >
-                Children
-              </Person>
-            </StyledPersonWrapper>
+            <StyledPerson
+              key={`person-${person.id}`}
+              name={person.name}
+              age={person.age}
+              inputChange={inputChange.bind(null, index)}
+              deletePerson={deletePerson.bind(null, index)}
+              textColor="yellow"
+            >
+              Children
+            </StyledPerson>
           );
         })}
       </div>
@@ -95,7 +90,7 @@ export function HomePage() {
         />
       </Helmet>
 
-      <StyledButtonWrapper>
+      <StyledButtonWrapper buttonColor={peopleState.buttonColor}>
         <button onClick={toggleShow}>Show/Hide</button>
       </StyledButtonWrapper>
       {renderingPeople}

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 export function Person(props) {
   return (
-    <>
+    <div className={props.className}>
       <p onClick={props.nameClick}>Name: {props.name}</p>
       <p>Age: {props.age}</p>
       <p>Characteristic: {props.children}</p>
@@ -12,7 +12,7 @@ export function Person(props) {
       <div>
         <button onClick={props.deletePerson}>Delete</button>
       </div>
-    </>
+    </div>
   );
 }
 
