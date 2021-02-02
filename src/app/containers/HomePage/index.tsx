@@ -8,6 +8,7 @@ import { PageWrapper } from 'app/components/PageWrapper';
 
 import { Person } from './Person';
 import { Product } from './Product';
+import { AuthContext } from './context/auth-context';
 
 let peopleList = [
   { id: '123', name: 'Thong', age: 24 },
@@ -72,6 +73,10 @@ export function HomePage() {
     setState({ ...state, valueTest: 'clgt' });
   };
 
+  const loginHandler = () => {
+    setState({ ...state, authenticated: true });
+  };
+
   let renderingPeople: JSX.Element | null = null;
   if (state.isShow) {
     renderingPeople = (
@@ -105,11 +110,19 @@ export function HomePage() {
         />
       </Helmet>
 
+      <button onClick={loginHandler}>Login as name 'Thong'</button>
+
       <StyledButtonWrapper buttonColor={state.buttonColor}>
         <button onClick={toggleShow}>Show/Hide</button>
       </StyledButtonWrapper>
 
-      {renderingPeople}
+      <AuthContext.Provider
+        value={{
+          authenticated: state.authenticated,
+        }}
+      >
+        {renderingPeople}
+      </AuthContext.Provider>
 
       <br />
       <StyledButtonWrapper buttonColor="green">

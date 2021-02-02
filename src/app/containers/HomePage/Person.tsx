@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components/macro';
 
+import { AuthContext } from './context/auth-context';
+
 // No need use PropsType
 export type PersonProps = {
   id: string;
@@ -29,17 +31,18 @@ export const Person = React.memo(
 
     const [state, setState] = React.useState({
       a: 0,
+      authenticated: false,
     });
-
-    const test = () => {
-      let x = state.a + 1;
-      setState({ a: x });
-    };
 
     React.useEffect(() => {
       console.log('DidMout or DidUpdate');
       lastInputElementRef.current?.focus();
     });
+
+    const test = () => {
+      let x = state.a + 1;
+      setState({ ...state, a: x });
+    };
 
     console.log('Person rendered: ' + props.name);
     return (
@@ -48,6 +51,15 @@ export const Person = React.memo(
         <p>Name: {props.name}</p>
         <p>Age: {props.age}</p>
         <p>Characteristic: {props.children}</p>
+        <AuthContext.Consumer>
+          {context => (
+            <div style={{ color: 'aqua' }}>
+              {context.authenticated && props.id === '123'
+                ? 'Authenticated'
+                : null}
+            </div>
+          )}
+        </AuthContext.Consumer>
         <div>
           <input
             type="text"
