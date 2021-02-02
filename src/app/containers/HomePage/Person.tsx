@@ -39,6 +39,9 @@ export const Person = React.memo(
       lastInputElementRef.current?.focus();
     });
 
+    const authContext = React.useContext(AuthContext);
+    console.log('authenticated: ' + authContext.authenticated);
+
     const test = () => {
       let x = state.a + 1;
       setState({ ...state, a: x });
@@ -51,7 +54,7 @@ export const Person = React.memo(
         <p>Name: {props.name}</p>
         <p>Age: {props.age}</p>
         <p>Characteristic: {props.children}</p>
-        <AuthContext.Consumer>
+        {/* <AuthContext.Consumer>
           {context => (
             <div style={{ color: 'aqua' }}>
               {context.authenticated && props.id === '123'
@@ -59,7 +62,10 @@ export const Person = React.memo(
                 : null}
             </div>
           )}
-        </AuthContext.Consumer>
+        </AuthContext.Consumer> */}
+        {authContext.authenticated && props.id === '123' ? (
+          <div style={{ color: 'aqua' }}>Authenticated</div>
+        ) : null}
         <div>
           <input
             type="text"
