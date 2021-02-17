@@ -28,6 +28,8 @@ import { ThemeProvider } from 'styles/theme/ThemeProvider';
 // Initialize languages
 import './locales/i18n';
 
+import './app/config/axios';
+
 // Observe loading of Inter (to remove 'Inter', remove the <link> tag in
 // the index.html file and this observer)
 const openSansObserver = new FontFaceObserver('Inter', {});

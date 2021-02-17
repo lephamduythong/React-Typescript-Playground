@@ -9,11 +9,13 @@ import { PageWrapper } from 'app/components/PageWrapper';
 import { Person } from './Person';
 import { Product } from './Product';
 import { AuthContext } from './context/auth-context';
+import axios from 'axios';
+import { axiosInstance } from '../../config/axios';
 
 let peopleList = [
-  { id: '123', name: 'Thong', age: 24 },
-  { id: '456', name: 'Anh', age: 25 },
-  { id: '789', name: 'Luong', age: 26 },
+  { id: '123', name: 'Thong', age: 24, postId: '1' },
+  { id: '456', name: 'Anh', age: 25, postId: '2' },
+  { id: '789', name: 'Luong', age: 26, postId: '3' },
 ];
 
 const StyledButtonWrapper = styled.div<{ buttonColor: string }>`
@@ -77,6 +79,19 @@ export function HomePage() {
     setState({ ...state, authenticated: true });
   };
 
+  const fetchHandler = async () => {
+    // fetch('https://jsonplaceholder.typicode.com/posts/1')
+    //   .then(res => res.json())
+    //   .then(data => console.log(data));
+    let resquest1 = axios.get('posts/1'); // Use default baseURL config
+    let resquest2 = axiosInstance.get(
+      'https://jsonplaceholder.typicode.com/posts/2',
+    );
+    await Promise.all([resquest1, resquest2]);
+    resquest1.then(data => console.log(data.data));
+    resquest2.then(data => console.log(data.data));
+  };
+
   let renderingPeople: JSX.Element | null = null;
   if (state.isShow) {
     renderingPeople = (
@@ -90,6 +105,7 @@ export function HomePage() {
               age={person.age}
               inputChangeFunc={inputChange.bind(null, person.id)}
               deletePersonFunc={deletePerson.bind(null, person.id)}
+              postId={person.postId}
             >
               Children
             </Person>
@@ -111,6 +127,7 @@ export function HomePage() {
       </Helmet>
 
       <button onClick={loginHandler}>Login as name 'Thong'</button>
+      <button onClick={fetchHandler}>Fetch</button>
 
       <StyledButtonWrapper buttonColor={state.buttonColor}>
         <button onClick={toggleShow}>Show/Hide</button>

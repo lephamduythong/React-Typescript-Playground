@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components/macro';
 
 import { AuthContext } from './context/auth-context';
+import axios from 'axios';
 
 // No need use PropsType
 export type PersonProps = {
@@ -9,6 +10,7 @@ export type PersonProps = {
   name: string;
   age: number;
   children: string;
+  postId: string;
   inputChangeFunc: (event: React.ChangeEvent<HTMLInputElement>) => void;
   deletePersonFunc: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -32,12 +34,28 @@ export const Person = React.memo(
     const [state, setState] = React.useState({
       a: 0,
       authenticated: false,
+      title: '',
+      error: false,
     });
 
     React.useEffect(() => {
       console.log('DidMout or DidUpdate');
       lastInputElementRef.current?.focus();
-    });
+      // fetch('https://jsonplaceholder.typicode.com/posts/' + props.postId)
+      //   .then(res => res.json())
+      //   .then(data => {
+      //     setState({ ...state, title: data.title });
+      //   });
+      axios
+        .get('https://jsonplaceholder.typicode.com/posts/' + props.postId)
+        .then(response => {
+          setState({ ...state, title: response.data.title });
+        })
+        .catch(error => {
+          setState({ ...state, error: true });
+        });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // componentDidMount() only, if no [] -> infite ajax call because of running componentDidUpdate()
 
     const authContext = React.useContext(AuthContext);
     console.log('authenticated: ' + authContext.authenticated);
@@ -51,6 +69,10 @@ export const Person = React.memo(
     return (
       <StyledWrapper>
         <p>{state.a}</p>
+        <p>
+          Title:{' '}
+          {state.title ? state.title : state.error ? 'Lỗi CMNR!' : 'Loading...'}
+        </p>
         <p>Name: {props.name}</p>
         <p>Age: {props.age}</p>
         <p>Characteristic: {props.children}</p>
