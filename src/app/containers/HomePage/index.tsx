@@ -11,6 +11,8 @@ import { Product } from './Product';
 import { AuthContext } from './context/auth-context';
 import axios from 'axios';
 import { axiosInstance } from '../../config/axios';
+import firebaseInstance from 'app/config/firebase';
+import { Spinner } from 'app/components/Spinner';
 
 let peopleList = [
   { id: '123', name: 'Thong', age: 24, postId: '1' },
@@ -26,6 +28,10 @@ const StyledButtonWrapper = styled.div<{ buttonColor: string }>`
   }
 `;
 
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 export function HomePage() {
   // React hooks
   // Init states
@@ -35,6 +41,8 @@ export function HomePage() {
     buttonColor: 'red',
     valueTest: '1',
     authenticated: false,
+    showSpinner: false,
+    processingText: 'READY',
   });
 
   // Side effects
@@ -92,6 +100,49 @@ export function HomePage() {
     resquest2.then(data => console.log(data.data));
   };
 
+  // https://firebase.google.com/docs/reference/rest/database
+  const firebaseGetHandler = async () => {
+    firebaseInstance
+      .get('shit.json')
+      .then(response => console.log(response.data))
+      .catch(error => console.log(error));
+  };
+
+  const firebasePostHandler = async () => {
+    firebaseInstance
+      .post('shit.json', { a: [1, 2, 3], b: 'clgt' })
+      .then(response => console.log(response))
+      .catch(error => console.log(error));
+  };
+
+  const firebasePutHandler = async () => {
+    firebaseInstance
+      .put('shit.json', { a: [1, 2, 3], b: 'clgt' })
+      .then(response => console.log(response))
+      .catch(error => console.log(error));
+  };
+
+  const firebasePatchHandler = async () => {
+    firebaseInstance
+      .patch('shit.json', { b: 'vcc ' })
+      .then(response => console.log(response))
+      .catch(error => console.log(error));
+  };
+
+  const firebaseDeleteHandler = async () => {
+    firebaseInstance
+      .delete('shit.json')
+      .then(response => console.log(response))
+      .catch(error => console.log(error));
+  };
+
+  const spinnerHandler = async () => {
+    // wait and fire success
+    setState({ ...state, showSpinner: true });
+    await delay(2000); // http request takes 2 seconds
+    setState({ ...state, showSpinner: false, processingText: 'DONE!' });
+  };
+
   let renderingPeople: JSX.Element | null = null;
   if (state.isShow) {
     renderingPeople = (
@@ -126,8 +177,26 @@ export function HomePage() {
         />
       </Helmet>
 
-      <button onClick={loginHandler}>Login as name 'Thong'</button>
-      <button onClick={fetchHandler}>Fetch</button>
+      <div style={{ margin: '10px' }}>
+        <button onClick={loginHandler}>Login as name 'Thong'</button>
+        <button onClick={fetchHandler}>Axios test</button>
+        <button onClick={spinnerHandler}>Spinner test</button>
+        {state.showSpinner ? (
+          <Spinner size={16} marginLeft={15}></Spinner>
+        ) : (
+          state.processingText
+        )}
+      </div>
+
+      <div>
+        <h1>Firebase API</h1>
+        <button onClick={firebaseGetHandler}>GET</button>
+        <button onClick={firebasePostHandler}>POST</button>
+        <button onClick={firebasePutHandler}>PUT</button>
+        <button onClick={firebasePatchHandler}>PATCH</button>
+        <button onClick={firebaseDeleteHandler}>DELETE</button>
+      </div>
+      <br />
 
       <StyledButtonWrapper buttonColor={state.buttonColor}>
         <button onClick={toggleShow}>Show/Hide</button>
