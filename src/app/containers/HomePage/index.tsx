@@ -13,6 +13,14 @@ import axios from 'axios';
 import { axiosInstance } from '../../config/axios';
 import firebaseInstance from 'app/config/firebase';
 import { Spinner } from 'app/components/Spinner';
+import {
+  Switch,
+  Route,
+  BrowserRouter as Router,
+  NavLink,
+  Redirect,
+} from 'react-router-dom';
+import { Post } from './Post';
 
 let peopleList = [
   { id: '123', name: 'Thong', age: 24, postId: '1' },
@@ -32,7 +40,7 @@ function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
 
-export function HomePage() {
+export function HomePage(props: any) {
   // React hooks
   // Init states
   const [state, setState] = React.useState({
@@ -43,6 +51,17 @@ export function HomePage() {
     authenticated: false,
     showSpinner: false,
     processingText: 'READY',
+    posts: [
+      {
+        id: 1,
+        content: 'ABC',
+      },
+      {
+        id: 2,
+        content: 'XYZ',
+      },
+    ],
+    isSubmitted: false,
   });
 
   // Side effects
@@ -143,6 +162,14 @@ export function HomePage() {
     setState({ ...state, showSpinner: false, processingText: 'DONE!' });
   };
 
+  const redirectHandler1 = async () => {
+    setState({ ...state, isSubmitted: true });
+  };
+
+  const redirectHandler2 = async () => {
+    props.history.replace('/about');
+  };
+
   let renderingPeople: JSX.Element | null = null;
   if (state.isShow) {
     renderingPeople = (
@@ -177,6 +204,46 @@ export function HomePage() {
         />
       </Helmet>
 
+      {state.isSubmitted ? <Redirect to="/about" /> : null}
+      <Router>
+        <div>
+          <h3>Routing content inside Homepage</h3>
+          <div>
+            <button onClick={redirectHandler1}>
+              Redirect using "Redirect" component
+            </button>
+            <button onClick={redirectHandler2}>
+              Redirect using "history" prop
+            </button>
+          </div>
+          <ul>
+            <li>
+              <NavLink to="/home/post">Show lasted post</NavLink>
+            </li>
+            {state.posts.map(post => (
+              <li key={post.id}>
+                <NavLink
+                  exact
+                  to={{
+                    pathname: `/home/post/${post.id}`,
+                    state: post.content,
+                    hash: 'position',
+                    search: '?a=1',
+                  }}
+                >
+                  Show post {post.id}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+          {/* Load single route only with Switch */}
+          <Switch>
+            <Route path="/home/post" component={() => <Post note="LASTED" />} />
+            <Route path="/home/post/:id" component={() => <Post note="ID" />} />
+          </Switch>
+        </div>
+      </Router>
+
       <div style={{ margin: '10px' }}>
         <button onClick={loginHandler}>Login as name 'Thong'</button>
         <button onClick={fetchHandler}>Axios test</button>
@@ -189,7 +256,7 @@ export function HomePage() {
       </div>
 
       <div>
-        <h1>Firebase API</h1>
+        <h3>Firebase API</h3>
         <button onClick={firebaseGetHandler}>GET</button>
         <button onClick={firebasePostHandler}>POST</button>
         <button onClick={firebasePutHandler}>PUT</button>
