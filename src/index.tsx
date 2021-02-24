@@ -30,6 +30,19 @@ import './locales/i18n';
 
 import './app/config/axios';
 
+// import './redux-basic';
+import { createStore, combineReducers } from 'redux';
+import myReducer from './store/reducers/myreducer';
+import testReducer from './store/reducers/testreducer';
+
+// Combine multiple reducers to one
+const rootReducer = combineReducers({
+  myReducer: myReducer,
+  testReducer: testReducer,
+});
+
+const myStore = createStore(rootReducer);
+
 // Observe loading of Inter (to remove 'Inter', remove the <link> tag in
 // the index.html file and this observer)
 const openSansObserver = new FontFaceObserver('Inter', {});
@@ -43,14 +56,19 @@ const store = configureAppStore();
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;
 
 ReactDOM.render(
-  <Provider store={store}>
-    <ThemeProvider>
-      <HelmetProvider>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </HelmetProvider>
-    </ThemeProvider>
+  // <Provider store={store}>
+  //   <ThemeProvider>
+  //     <HelmetProvider>
+  //       <React.StrictMode>
+
+  //       </React.StrictMode>
+  //     </HelmetProvider>
+  //   </ThemeProvider>
+  // </Provider>
+  <Provider store={myStore}>
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
   </Provider>,
   MOUNT_NODE,
 );

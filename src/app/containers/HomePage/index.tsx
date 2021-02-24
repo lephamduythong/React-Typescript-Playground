@@ -2,9 +2,6 @@ import * as React from 'react';
 import styled from 'styled-components/macro';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../NavBar';
-import { Masthead } from './Masthead';
-import { Features } from './Features';
-import { PageWrapper } from 'app/components/PageWrapper';
 
 import { Person } from './Person';
 import { Product } from './Product';
@@ -21,6 +18,11 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { Post } from './Post';
+
+import { connect } from 'react-redux';
+
+import './style.css';
+import * as actionTypes from '../../../store/actions';
 
 let peopleList = [
   { id: '123', name: 'Thong', age: 24, postId: '1' },
@@ -40,7 +42,30 @@ function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
 
-export function HomePage(props: any) {
+const mapStateToProps = state => {
+  return {
+    ctr: state.myReducer.counter,
+  };
+};
+
+const mapDisptachToProps = dispatch => {
+  return {
+    onIncrementCounter: () => {
+      dispatch({ type: actionTypes.INCREMENT });
+    },
+    onDecrementCounter: () => {
+      dispatch({ type: actionTypes.DECREMENT });
+    },
+    onAddCounter: () => {
+      dispatch({ type: actionTypes.ADD, value: 5 });
+    },
+  };
+};
+
+export const HomePage = connect(
+  mapStateToProps,
+  mapDisptachToProps,
+)((props: any) => {
   // React hooks
   // Init states
   const [state, setState] = React.useState({
@@ -66,7 +91,7 @@ export function HomePage(props: any) {
 
   // Side effects
   React.useEffect(() => {
-    console.log('HomePage');
+    // console.log('HomePage');
   }, []);
 
   const toggleShow = () => {
@@ -109,7 +134,7 @@ export function HomePage(props: any) {
   const fetchHandler = async () => {
     // fetch('https://jsonplaceholder.typicode.com/posts/1')
     //   .then(res => res.json())
-    //   .then(data => console.log(data));
+    //   .then(data => // console.log(data));
     let resquest1 = axios.get('posts/1'); // Use default baseURL config
     let resquest2 = axiosInstance.get(
       'https://jsonplaceholder.typicode.com/posts/2',
@@ -204,6 +229,16 @@ export function HomePage(props: any) {
         />
       </Helmet>
 
+      {/* <NavBar /> */}
+
+      <div>
+        <h3>Redux Playground</h3>
+        <p>Counter: {props.ctr}</p>
+        <button onClick={props.onIncrementCounter}>Increase</button>
+        <button onClick={props.onDecrementCounter}>Decrease</button>
+        <button onClick={props.onAddCounter}>Add 5</button>
+      </div>
+
       {state.isSubmitted ? <Redirect to="/about" /> : null}
       <Router>
         <div>
@@ -287,11 +322,10 @@ export function HomePage(props: any) {
       <Product v1="3" v2="4"></Product>
       <Product v1="5" v2="6"></Product>
 
-      <NavBar />
-      <PageWrapper>
+      {/* <PageWrapper>
         <Masthead />
         <Features />
-      </PageWrapper>
+      </PageWrapper> */}
     </>
   );
-}
+});

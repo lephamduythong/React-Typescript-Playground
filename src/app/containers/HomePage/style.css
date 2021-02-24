@@ -1,0 +1,9 @@
+body {
+    background-color: rgb(41, 41, 41);
+    color: white;
+}
+
+a, a:active, a:focus, a:visited {
+    text-decoration: none;
+    color: white;
+}

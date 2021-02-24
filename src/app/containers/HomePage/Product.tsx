@@ -8,7 +8,7 @@ const StyledWrapper = styled.div`
 
 export class Product extends React.PureComponent<{ v1: string; v2: string }> {
   render() {
-    console.log('Product render ' + this.props.v2);
+    // console.log('Product render ' + this.props.v2);
     return (
       <StyledWrapper>
         {this.props.v1} - {this.props.v2}

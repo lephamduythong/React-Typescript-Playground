@@ -11,8 +11,6 @@ import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components/macro';
 import { Switch, Route, BrowserRouter, NavLink } from 'react-router-dom';
 
-import { GlobalStyle } from '../styles/global-styles';
-
 import { HomePage } from './containers/HomePage/Loadable';
 import { NotFoundPage } from './containers/NotFoundPage/Loadable';
 import { useTranslation } from 'react-i18next';
@@ -31,16 +29,16 @@ const StyledNav = styled.div`
 `;
 
 export function App() {
-  const { i18n } = useTranslation();
+  // const { i18n } = useTranslation();
   return (
     <BrowserRouter>
-      <Helmet
+      {/* <Helmet
         titleTemplate="%s - React Boilerplate"
         defaultTitle="React Boilerplate"
         htmlAttributes={{ lang: i18n.language }}
       >
         <meta name="description" content="A React Boilerplate application" />
-      </Helmet>
+      </Helmet> */}
 
       <StyledNav>
         <h1>Routing</h1>
@@ -77,7 +75,7 @@ export function App() {
         <Route component={NotFoundPage} />
       </Switch>
 
-      <GlobalStyle />
+      {/* <GlobalStyle /> */}
     </BrowserRouter>
   );
 }
