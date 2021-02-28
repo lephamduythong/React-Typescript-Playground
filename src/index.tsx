@@ -21,27 +21,44 @@ import { App } from 'app';
 
 import { HelmetProvider } from 'react-helmet-async';
 
-import { configureAppStore } from 'store/configureStore';
-
-import { ThemeProvider } from 'styles/theme/ThemeProvider';
-
 // Initialize languages
 import './locales/i18n';
 
 import './app/config/axios';
 
 // import './redux-basic';
-import { createStore, combineReducers } from 'redux';
-import myReducer from './store/reducers/myreducer';
-import testReducer from './store/reducers/testreducer';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+import counterReducer from './store/reducers/counter';
+import testReducer from './store/reducers/test';
+import thunk from 'redux-thunk';
 
 // Combine multiple reducers to one
 const rootReducer = combineReducers({
-  myReducer: myReducer,
+  counterReducer: counterReducer,
   testReducer: testReducer,
 });
 
-const myStore = createStore(rootReducer);
+export type MyRootState = ReturnType<typeof rootReducer>;
+
+const logger = store => {
+  return next => {
+    return action => {
+      console.log('[Middleware] dispatching', action);
+      const result = next(action);
+      console.log('[Middleware] next state', store.getState());
+      return result;
+    };
+  };
+};
+
+// Integrate dev tool extension for Chrome, Firefox
+const composeEnhancers =
+  (window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] as typeof compose) || compose;
+
+const myStore = createStore(
+  rootReducer,
+  composeEnhancers(applyMiddleware(thunk, logger)),
+);
 
 // Observe loading of Inter (to remove 'Inter', remove the <link> tag in
 // the index.html file and this observer)
@@ -52,7 +69,7 @@ openSansObserver.load().then(() => {
   document.body.classList.add('fontLoaded');
 });
 
-const store = configureAppStore();
+// const store = configureAppStore();
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;
 
 ReactDOM.render(

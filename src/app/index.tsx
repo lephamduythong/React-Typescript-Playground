@@ -7,13 +7,11 @@
  */
 
 import * as React from 'react';
-import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components/macro';
 import { Switch, Route, BrowserRouter, NavLink } from 'react-router-dom';
 
 import { HomePage } from './containers/HomePage/Loadable';
 import { NotFoundPage } from './containers/NotFoundPage/Loadable';
-import { useTranslation } from 'react-i18next';
 import { AboutPage } from './containers/AboutPage';
 import asyncComponent from './hoc/asyncComponent/index';
 

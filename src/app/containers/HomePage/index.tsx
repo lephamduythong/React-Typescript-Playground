@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components/macro';
 import { Helmet } from 'react-helmet-async';
-import { NavBar } from '../NavBar';
 
 import { Person } from './Person';
 import { Product } from './Product';
@@ -16,13 +15,16 @@ import {
   BrowserRouter as Router,
   NavLink,
   Redirect,
+  withRouter,
+  RouteComponentProps,
 } from 'react-router-dom';
 import { Post } from './Post';
 
 import { connect } from 'react-redux';
 
 import './style.css';
-import * as actionTypes from '../../../store/actions';
+import * as counterActions from '../../../store/actions/counter';
+import { MyRootState } from 'index';
 
 let peopleList = [
   { id: '123', name: 'Thong', age: 24, postId: '1' },
@@ -42,290 +44,338 @@ function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
 
-const mapStateToProps = state => {
-  return {
-    ctr: state.myReducer.counter,
+export type HomePageStateProps = {
+  counter: number;
+  isCounterProcessing: boolean;
+};
+
+export type HomePageDispatchProps = {
+  onIncrementCounter?: () => void;
+  onDecrementCounter?: () => void;
+  onAddCounter?: () => void;
+  onIncrementDelayedCounter?: () => void;
+};
+
+export type HomePageActions = {
+  type: string;
+  value: number;
+};
+
+type HomePageRouteParams = {};
+
+const mapStateToProps = (state: MyRootState) => {
+  const props: HomePageStateProps = {
+    counter: state.counterReducer.counter,
+    isCounterProcessing: state.counterReducer.isCounterProcessing,
   };
+  return props;
 };
 
 const mapDisptachToProps = dispatch => {
-  return {
+  const props: HomePageDispatchProps = {
     onIncrementCounter: () => {
-      dispatch({ type: actionTypes.INCREMENT });
+      dispatch(counterActions.increase());
     },
     onDecrementCounter: () => {
-      dispatch({ type: actionTypes.DECREMENT });
+      dispatch(counterActions.decrease());
     },
     onAddCounter: () => {
-      dispatch({ type: actionTypes.ADD, value: 5 });
+      dispatch(counterActions.add(5));
+    },
+    onIncrementDelayedCounter: () => {
+      dispatch(counterActions.delayedIncrease());
     },
   };
+  return props;
 };
 
-export const HomePage = connect(
-  mapStateToProps,
-  mapDisptachToProps,
-)((props: any) => {
-  // React hooks
-  // Init states
-  const [state, setState] = React.useState({
-    people: peopleList,
-    isShow: false,
-    buttonColor: 'red',
-    valueTest: '1',
-    authenticated: false,
-    showSpinner: false,
-    processingText: 'READY',
-    posts: [
-      {
-        id: 1,
-        content: 'ABC',
-      },
-      {
-        id: 2,
-        content: 'XYZ',
-      },
-    ],
-    isSubmitted: false,
-  });
+export const HomePage = withRouter(
+  connect(
+    mapStateToProps,
+    mapDisptachToProps,
+  )(
+    (
+      props: RouteComponentProps<HomePageRouteParams> &
+        HomePageStateProps &
+        HomePageDispatchProps,
+    ) => {
+      // React hooks
+      // Init states
+      const [state, setState] = React.useState({
+        people: peopleList,
+        isShow: false,
+        buttonColor: 'red',
+        valueTest: '1',
+        authenticated: false,
+        showSpinner: false,
+        processingText: 'READY',
+        posts: [
+          {
+            id: 1,
+            content: 'ABC',
+          },
+          {
+            id: 2,
+            content: 'XYZ',
+          },
+        ],
+        isSubmitted: false,
+      });
 
-  // Side effects
-  React.useEffect(() => {
-    // console.log('HomePage');
-  }, []);
+      // Side effects
+      React.useEffect(() => {
+        // console.log('HomePage');
+      }, []);
 
-  const toggleShow = () => {
-    setState({
-      ...state,
-      isShow: !state.isShow,
-      buttonColor: state.buttonColor === 'red' ? 'blue' : 'red',
-    });
-  };
+      const toggleShow = () => {
+        setState({
+          ...state,
+          isShow: !state.isShow,
+          buttonColor: state.buttonColor === 'red' ? 'blue' : 'red',
+        });
+      };
 
-  // Two-way binding
-  const inputChange = (
-    personId: string,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    let index = peopleList.findIndex(p => p.id === personId);
-    peopleList[index].name = event.target.value;
-    setState({
-      ...state,
-    });
-  };
+      // Two-way binding
+      const inputChange = (
+        personId: string,
+        event: React.ChangeEvent<HTMLInputElement>,
+      ) => {
+        let index = peopleList.findIndex(p => p.id === personId);
+        peopleList[index].name = event.target.value;
+        setState({
+          ...state,
+        });
+      };
 
-  const deletePerson = (
-    personId: string,
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    let index = peopleList.findIndex(p => p.id === personId);
-    peopleList.splice(index, 1);
-    setState({ ...state, people: peopleList });
-  };
+      const deletePerson = (
+        personId: string,
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      ) => {
+        let index = peopleList.findIndex(p => p.id === personId);
+        peopleList.splice(index, 1);
+        setState({ ...state, people: peopleList });
+      };
 
-  const changeProductTest = () => {
-    setState({ ...state, valueTest: 'clgt' });
-  };
+      const changeProductTest = () => {
+        setState({ ...state, valueTest: 'clgt' });
+      };
 
-  const loginHandler = () => {
-    setState({ ...state, authenticated: true });
-  };
+      const loginHandler = () => {
+        setState({ ...state, authenticated: true });
+      };
 
-  const fetchHandler = async () => {
-    // fetch('https://jsonplaceholder.typicode.com/posts/1')
-    //   .then(res => res.json())
-    //   .then(data => // console.log(data));
-    let resquest1 = axios.get('posts/1'); // Use default baseURL config
-    let resquest2 = axiosInstance.get(
-      'https://jsonplaceholder.typicode.com/posts/2',
-    );
-    await Promise.all([resquest1, resquest2]);
-    resquest1.then(data => console.log(data.data));
-    resquest2.then(data => console.log(data.data));
-  };
+      const fetchHandler = async () => {
+        // fetch('https://jsonplaceholder.typicode.com/posts/1')
+        //   .then(res => res.json())
+        //   .then(data => // console.log(data));
+        let resquest1 = axios.get('posts/1'); // Use default baseURL config
+        let resquest2 = axiosInstance.get(
+          'https://jsonplaceholder.typicode.com/posts/2',
+        );
+        await Promise.all([resquest1, resquest2]);
+        resquest1.then(data => console.log(data.data));
+        resquest2.then(data => console.log(data.data));
+      };
 
-  // https://firebase.google.com/docs/reference/rest/database
-  const firebaseGetHandler = async () => {
-    firebaseInstance
-      .get('shit.json')
-      .then(response => console.log(response.data))
-      .catch(error => console.log(error));
-  };
+      // https://firebase.google.com/docs/reference/rest/database
+      const firebaseGetHandler = async () => {
+        firebaseInstance
+          .get('shit.json')
+          .then(response => console.log(response.data))
+          .catch(error => console.log(error));
+      };
 
-  const firebasePostHandler = async () => {
-    firebaseInstance
-      .post('shit.json', { a: [1, 2, 3], b: 'clgt' })
-      .then(response => console.log(response))
-      .catch(error => console.log(error));
-  };
+      const firebasePostHandler = async () => {
+        firebaseInstance
+          .post('shit.json', { a: [1, 2, 3], b: 'clgt' })
+          .then(response => console.log(response))
+          .catch(error => console.log(error));
+      };
 
-  const firebasePutHandler = async () => {
-    firebaseInstance
-      .put('shit.json', { a: [1, 2, 3], b: 'clgt' })
-      .then(response => console.log(response))
-      .catch(error => console.log(error));
-  };
+      const firebasePutHandler = async () => {
+        firebaseInstance
+          .put('shit.json', { a: [1, 2, 3], b: 'clgt' })
+          .then(response => console.log(response))
+          .catch(error => console.log(error));
+      };
 
-  const firebasePatchHandler = async () => {
-    firebaseInstance
-      .patch('shit.json', { b: 'vcc ' })
-      .then(response => console.log(response))
-      .catch(error => console.log(error));
-  };
+      const firebasePatchHandler = async () => {
+        firebaseInstance
+          .patch('shit.json', { b: 'vcc ' })
+          .then(response => console.log(response))
+          .catch(error => console.log(error));
+      };
 
-  const firebaseDeleteHandler = async () => {
-    firebaseInstance
-      .delete('shit.json')
-      .then(response => console.log(response))
-      .catch(error => console.log(error));
-  };
+      const firebaseDeleteHandler = async () => {
+        firebaseInstance
+          .delete('shit.json')
+          .then(response => console.log(response))
+          .catch(error => console.log(error));
+      };
 
-  const spinnerHandler = async () => {
-    // wait and fire success
-    setState({ ...state, showSpinner: true });
-    await delay(2000); // http request takes 2 seconds
-    setState({ ...state, showSpinner: false, processingText: 'DONE!' });
-  };
+      const spinnerHandler = async () => {
+        // wait and fire success
+        setState({ ...state, showSpinner: true });
+        await delay(2000); // http request takes 2 seconds
+        setState({ ...state, showSpinner: false, processingText: 'DONE!' });
+      };
 
-  const redirectHandler1 = async () => {
-    setState({ ...state, isSubmitted: true });
-  };
+      const redirectHandler1 = async () => {
+        setState({ ...state, isSubmitted: true });
+      };
 
-  const redirectHandler2 = async () => {
-    props.history.replace('/about');
-  };
+      const redirectHandler2 = async () => {
+        props.history.replace('/about');
+      };
 
-  let renderingPeople: JSX.Element | null = null;
-  if (state.isShow) {
-    renderingPeople = (
-      <div>
-        {state.people.map((person, index) => {
-          return (
-            <Person
-              key={`person-${person.id}`}
-              id={person.id}
-              name={person.name}
-              age={person.age}
-              inputChangeFunc={inputChange.bind(null, person.id)}
-              deletePersonFunc={deletePerson.bind(null, person.id)}
-              postId={person.postId}
-            >
-              Children
-            </Person>
-          );
-        })}
-      </div>
-    );
-  }
-
-  return (
-    // React.Fragment short hand <>...</>, alternative for [array elements]
-    <>
-      <Helmet>
-        <title>Home Page</title>
-        <meta
-          name="description"
-          content="A React Boilerplate application homepage"
-        />
-      </Helmet>
-
-      {/* <NavBar /> */}
-
-      <div>
-        <h3>Redux Playground</h3>
-        <p>Counter: {props.ctr}</p>
-        <button onClick={props.onIncrementCounter}>Increase</button>
-        <button onClick={props.onDecrementCounter}>Decrease</button>
-        <button onClick={props.onAddCounter}>Add 5</button>
-      </div>
-
-      {state.isSubmitted ? <Redirect to="/about" /> : null}
-      <Router>
-        <div>
-          <h3>Routing content inside Homepage</h3>
+      let renderingPeople: JSX.Element | null = null;
+      if (state.isShow) {
+        renderingPeople = (
           <div>
-            <button onClick={redirectHandler1}>
-              Redirect using "Redirect" component
-            </button>
-            <button onClick={redirectHandler2}>
-              Redirect using "history" prop
+            {state.people.map((person, index) => {
+              return (
+                <Person
+                  key={`person-${person.id}`}
+                  id={person.id}
+                  name={person.name}
+                  age={person.age}
+                  inputChangeFunc={inputChange.bind(null, person.id)}
+                  deletePersonFunc={deletePerson.bind(null, person.id)}
+                  postId={person.postId}
+                >
+                  Children
+                </Person>
+              );
+            })}
+          </div>
+        );
+      }
+
+      return (
+        // React.Fragment short hand <>...</>, alternative for [array elements]
+        <>
+          <Helmet>
+            <title>Home Page</title>
+            <meta
+              name="description"
+              content="A React Boilerplate application homepage"
+            />
+          </Helmet>
+
+          {/* <NavBar /> */}
+
+          <div>
+            <h3>Redux Playground</h3>
+            <p>
+              Counter: &nbsp;
+              {props.isCounterProcessing ? 'Processing...' : props.counter}
+            </p>
+            <button onClick={props.onIncrementCounter}>Increase</button>
+            <button onClick={props.onDecrementCounter}>Decrease</button>
+            <button onClick={props.onAddCounter}>Add 5</button>
+            <button
+              onClick={props.onIncrementDelayedCounter}
+              disabled={props.isCounterProcessing ? true : false}
+            >
+              Increase delayed 2s
             </button>
           </div>
-          <ul>
-            <li>
-              <NavLink to="/home/post">Show lasted post</NavLink>
-            </li>
-            {state.posts.map(post => (
-              <li key={post.id}>
-                <NavLink
-                  exact
-                  to={{
-                    pathname: `/home/post/${post.id}`,
-                    state: post.content,
-                    hash: 'position',
-                    search: '?a=1',
-                  }}
-                >
-                  Show post {post.id}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-          {/* Load single route only with Switch */}
-          <Switch>
-            <Route path="/home/post" component={() => <Post note="LASTED" />} />
-            <Route path="/home/post/:id" component={() => <Post note="ID" />} />
-          </Switch>
-        </div>
-      </Router>
 
-      <div style={{ margin: '10px' }}>
-        <button onClick={loginHandler}>Login as name 'Thong'</button>
-        <button onClick={fetchHandler}>Axios test</button>
-        <button onClick={spinnerHandler}>Spinner test</button>
-        {state.showSpinner ? (
-          <Spinner size={16} marginLeft={15}></Spinner>
-        ) : (
-          state.processingText
-        )}
-      </div>
+          {state.isSubmitted ? <Redirect to="/about" /> : null}
+          <Router>
+            <div>
+              <h3>Routing content inside Homepage</h3>
+              <div>
+                <button onClick={redirectHandler1}>
+                  Redirect using "Redirect" component
+                </button>
+                <button onClick={redirectHandler2}>
+                  Redirect using "history" prop
+                </button>
+              </div>
+              <ul>
+                <li>
+                  <NavLink to="/home/post">Show lasted post</NavLink>
+                </li>
+                {state.posts.map(post => (
+                  <li key={post.id}>
+                    <NavLink
+                      exact
+                      to={{
+                        pathname: `/home/post/${post.id}`,
+                        state: post.content,
+                        hash: 'position',
+                        search: '?a=1',
+                      }}
+                    >
+                      Show post {post.id}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+              {/* Load single route only with Switch */}
+              <Switch>
+                <Route
+                  path="/home/post"
+                  component={() => <Post note="LASTED" />}
+                />
+                <Route
+                  path="/home/post/:id"
+                  component={() => <Post note="ID" />}
+                />
+              </Switch>
+            </div>
+          </Router>
 
-      <div>
-        <h3>Firebase API</h3>
-        <button onClick={firebaseGetHandler}>GET</button>
-        <button onClick={firebasePostHandler}>POST</button>
-        <button onClick={firebasePutHandler}>PUT</button>
-        <button onClick={firebasePatchHandler}>PATCH</button>
-        <button onClick={firebaseDeleteHandler}>DELETE</button>
-      </div>
-      <br />
+          <div style={{ margin: '10px' }}>
+            <button onClick={loginHandler}>Login as name 'Thong'</button>
+            <button onClick={fetchHandler}>Axios test</button>
+            <button onClick={spinnerHandler}>Spinner test</button>
+            {state.showSpinner ? (
+              <Spinner size={16} marginLeft={15}></Spinner>
+            ) : (
+              state.processingText
+            )}
+          </div>
 
-      <StyledButtonWrapper buttonColor={state.buttonColor}>
-        <button onClick={toggleShow}>Show/Hide</button>
-      </StyledButtonWrapper>
+          <div>
+            <h3>Firebase API</h3>
+            <button onClick={firebaseGetHandler}>GET</button>
+            <button onClick={firebasePostHandler}>POST</button>
+            <button onClick={firebasePutHandler}>PUT</button>
+            <button onClick={firebasePatchHandler}>PATCH</button>
+            <button onClick={firebaseDeleteHandler}>DELETE</button>
+          </div>
+          <br />
 
-      <AuthContext.Provider
-        value={{
-          authenticated: state.authenticated,
-        }}
-      >
-        {renderingPeople}
-      </AuthContext.Provider>
+          <StyledButtonWrapper buttonColor={state.buttonColor}>
+            <button onClick={toggleShow}>Show/Hide</button>
+          </StyledButtonWrapper>
 
-      <br />
-      <StyledButtonWrapper buttonColor="green">
-        <button onClick={changeProductTest}>
-          Change person name test for PureComponent and .memo
-        </button>
-      </StyledButtonWrapper>
-      <Product v1={state.valueTest} v2="2"></Product>
-      <Product v1="3" v2="4"></Product>
-      <Product v1="5" v2="6"></Product>
+          <AuthContext.Provider
+            value={{
+              authenticated: state.authenticated,
+            }}
+          >
+            {renderingPeople}
+          </AuthContext.Provider>
 
-      {/* <PageWrapper>
+          <br />
+          <StyledButtonWrapper buttonColor="green">
+            <button onClick={changeProductTest}>
+              Change person name test for PureComponent and .memo
+            </button>
+          </StyledButtonWrapper>
+          <Product v1={state.valueTest} v2="2"></Product>
+          <Product v1="3" v2="4"></Product>
+          <Product v1="5" v2="6"></Product>
+
+          {/* <PageWrapper>
         <Masthead />
         <Features />
       </PageWrapper> */}
-    </>
-  );
-});
+        </>
+      );
+    },
+  ),
+);
