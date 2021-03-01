@@ -57,6 +57,7 @@ export type HomePageDispatchProps = {
   onAddCounter?: () => void;
   onIncrementDelayedCounterThunk?: () => void;
   onIncrementDelayedCounterSaga?: () => void;
+  onIncrementDelayedCounterEpic?: () => void;
 };
 
 export type HomePageActions = {
@@ -90,6 +91,9 @@ const mapDisptachToProps = dispatch => {
     },
     onIncrementDelayedCounterSaga: () => {
       dispatch(counterActions.delayedIncreaseSaga());
+    },
+    onIncrementDelayedCounterEpic: () => {
+      dispatch(counterActions.delayedIncreaseEpic());
     },
   };
   return props;
@@ -290,6 +294,12 @@ export const HomePage = withRouter(
               disabled={props.isCounterProcessing ? true : false}
             >
               Increase delayed 2s using redux-saga
+            </button>
+            <button
+              onClick={props.onIncrementDelayedCounterEpic}
+              disabled={props.isCounterProcessing ? true : false}
+            >
+              Increase delayed 2s using redux-observable
             </button>
           </div>
 

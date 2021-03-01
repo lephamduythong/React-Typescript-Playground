@@ -43,3 +43,9 @@ export const delayedIncreaseSaga = () => {
     type: actionTypes.CLGT
   }
 }
+
+export const delayedIncreaseEpic = () => {
+  return {
+    type: actionTypes.CLGT
+  }
+}

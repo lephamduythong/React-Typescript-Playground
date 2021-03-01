@@ -37,6 +37,12 @@ import thunk from 'redux-thunk';
 // redux-saga
 import createSageMiddleware from 'redux-saga';
 import { watchCounter } from 'store/sagas';
+
+// redux-observable
+import { createEpicMiddleware } from 'redux-observable';
+import rootEpics from './store/epics';
+
+const epicMiddleware = createEpicMiddleware();
 const sagaMiddleware = createSageMiddleware();
 
 // Combine multiple reducers to one
@@ -64,10 +70,11 @@ const composeEnhancers =
 
 const myStore = createStore(
   rootReducer,
-  applyMiddleware(thunk, sagaMiddleware, logger),
+  applyMiddleware(thunk, sagaMiddleware, epicMiddleware, logger),
 );
 
 sagaMiddleware.run(watchCounter);
+epicMiddleware.run(rootEpics);
 
 // Observe loading of Inter (to remove 'Inter', remove the <link> tag in
 // the index.html file and this observer)
