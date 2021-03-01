@@ -30,7 +30,14 @@ import './app/config/axios';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import counterReducer from './store/reducers/counter';
 import testReducer from './store/reducers/test';
+
+// redux-thunk
 import thunk from 'redux-thunk';
+
+// redux-saga
+import createSageMiddleware from 'redux-saga';
+import { watchCounter } from 'store/sagas';
+const sagaMiddleware = createSageMiddleware();
 
 // Combine multiple reducers to one
 const rootReducer = combineReducers({
@@ -57,8 +64,10 @@ const composeEnhancers =
 
 const myStore = createStore(
   rootReducer,
-  composeEnhancers(applyMiddleware(thunk, logger)),
+  applyMiddleware(thunk, sagaMiddleware, logger),
 );
+
+sagaMiddleware.run(watchCounter);
 
 // Observe loading of Inter (to remove 'Inter', remove the <link> tag in
 // the index.html file and this observer)

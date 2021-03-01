@@ -28,7 +28,7 @@ export const add = (value: number) => {
 };
 
 // Use async code with 'redux-thunk' middleware
-export const delayedIncrease = () => {
+export const delayedIncreaseThunk = () => {
   return dispatch => {
     dispatch(toggleLoading());
     setTimeout(() => {
@@ -37,3 +37,9 @@ export const delayedIncrease = () => {
     }, 2000);
   };
 };
+
+export const delayedIncreaseSaga = () => {
+  return {
+    type: actionTypes.CLGT
+  }
+}
