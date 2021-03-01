@@ -26,6 +26,8 @@ import './style.css';
 import * as counterActions from '../../../store/actions/counter';
 import { MyRootState } from 'index';
 
+import { delayedIncreaseSaga } from '../../../store/sagas/counter';
+
 let peopleList = [
   { id: '123', name: 'Thong', age: 24, postId: '1' },
   { id: '456', name: 'Anh', age: 25, postId: '2' },
@@ -53,7 +55,9 @@ export type HomePageDispatchProps = {
   onIncrementCounter?: () => void;
   onDecrementCounter?: () => void;
   onAddCounter?: () => void;
-  onIncrementDelayedCounter?: () => void;
+  onIncrementDelayedCounterThunk?: () => void;
+  onIncrementDelayedCounterSaga?: () => void;
+  onIncrementDelayedCounterEpic?: () => void;
 };
 
 export type HomePageActions = {
@@ -82,8 +86,14 @@ const mapDisptachToProps = dispatch => {
     onAddCounter: () => {
       dispatch(counterActions.add(5));
     },
-    onIncrementDelayedCounter: () => {
-      dispatch(counterActions.delayedIncrease());
+    onIncrementDelayedCounterThunk: () => {
+      dispatch(counterActions.delayedIncreaseThunk());
+    },
+    onIncrementDelayedCounterSaga: () => {
+      dispatch(counterActions.delayedIncreaseSaga());
+    },
+    onIncrementDelayedCounterEpic: () => {
+      dispatch(counterActions.delayedIncreaseEpic());
     },
   };
   return props;
@@ -274,10 +284,22 @@ export const HomePage = withRouter(
             <button onClick={props.onDecrementCounter}>Decrease</button>
             <button onClick={props.onAddCounter}>Add 5</button>
             <button
-              onClick={props.onIncrementDelayedCounter}
+              onClick={props.onIncrementDelayedCounterThunk}
               disabled={props.isCounterProcessing ? true : false}
             >
-              Increase delayed 2s
+              Increase delayed 2s using redux-thunk
+            </button>
+            <button
+              onClick={props.onIncrementDelayedCounterSaga}
+              disabled={props.isCounterProcessing ? true : false}
+            >
+              Increase delayed 2s using redux-saga
+            </button>
+            <button
+              onClick={props.onIncrementDelayedCounterEpic}
+              disabled={props.isCounterProcessing ? true : false}
+            >
+              Increase delayed 2s using redux-observable
             </button>
           </div>
 

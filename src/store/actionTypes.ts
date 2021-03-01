@@ -4,3 +4,4 @@ export const TOGGLE_PROCESSING = 'TOGGLE_PROCESSING';
 export const INCREASE = 'INCREASE';
 export const DECREASE = 'DECREASE';
 export const ADD = 'ADD';
+export const CLGT = 'CLGT';
