@@ -40,12 +40,12 @@ export const delayedIncreaseThunk = () => {
 
 export const delayedIncreaseSaga = () => {
   return {
-    type: actionTypes.CLGT
+    type: actionTypes.INCREASE_SAGA
   }
 }
 
 export const delayedIncreaseEpic = () => {
   return {
-    type: actionTypes.CLGT
+    type: actionTypes.INCREASE_EPIC
   }
 }

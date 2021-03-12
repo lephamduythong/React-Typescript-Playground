@@ -26,8 +26,6 @@ import './style.css';
 import * as counterActions from '../../../store/actions/counter';
 import { MyRootState } from 'index';
 
-import { delayedIncreaseSaga } from '../../../store/sagas/counter';
-
 let peopleList = [
   { id: '123', name: 'Thong', age: 24, postId: '1' },
   { id: '456', name: 'Anh', age: 25, postId: '2' },

@@ -27,7 +27,7 @@ import './locales/i18n';
 import './app/config/axios';
 
 // import './redux-basic';
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import counterReducer from './store/reducers/counter';
 import testReducer from './store/reducers/test';
 
@@ -65,8 +65,8 @@ const logger = store => {
 };
 
 // Integrate dev tool extension for Chrome, Firefox
-const composeEnhancers =
-  (window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] as typeof compose) || compose;
+// const composeEnhancers =
+//   (window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] as typeof compose) || compose;
 
 const myStore = createStore(
   rootReducer,

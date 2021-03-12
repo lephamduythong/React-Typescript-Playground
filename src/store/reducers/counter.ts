@@ -12,12 +12,14 @@ const reducer = (state = initialState, action: HomePageActions) => {
   let returnValue: HomePageStateProps = state;
   switch (action.type) {
     case actionTypes.TOGGLE_PROCESSING:
+      console.log('log me 1');
       returnValue = {
         ...state,
         isCounterProcessing: !state.isCounterProcessing,
       };
       return returnValue;
     case actionTypes.INCREASE:
+      console.log('log me 2');
       returnValue = {
         ...state,
         counter: state.counter + 1,
