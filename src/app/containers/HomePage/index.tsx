@@ -20,7 +20,7 @@ import {
 } from 'react-router-dom';
 import { Post } from './Post';
 
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 import './style.css';
 import * as counterActions from '../../../store/actions/counter';
@@ -107,6 +107,8 @@ export const HomePage = withRouter(
         HomePageStateProps &
         HomePageDispatchProps,
     ) => {
+      const dispatch = useDispatch();
+
       // React hooks
       // Init states
       const [state, setState] = React.useState({
@@ -259,6 +261,10 @@ export const HomePage = withRouter(
         );
       }
 
+      const dispatchTest = () => {
+        dispatch(counterActions.increase());
+      };
+
       return (
         // React.Fragment short hand <>...</>, alternative for [array elements]
         <>
@@ -298,6 +304,9 @@ export const HomePage = withRouter(
               disabled={props.isCounterProcessing ? true : false}
             >
               Increase delayed 2s using redux-observable
+            </button>
+            <button onClick={dispatchTest}>
+              Dispatch using useDispath of 'react-redux'
             </button>
           </div>
 
