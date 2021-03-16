@@ -26,6 +26,8 @@ import './style.css';
 import * as counterActions from '../../../store/actions/counter';
 import { MyRootState } from 'index';
 
+import { ProductContext } from '../../../context/products-context';
+
 let peopleList = [
   { id: '123', name: 'Thong', age: 24, postId: '1' },
   { id: '456', name: 'Anh', age: 25, postId: '2' },
@@ -265,6 +267,13 @@ export const HomePage = withRouter(
         dispatch(counterActions.increase());
       };
 
+      const productsList = React.useContext(ProductContext).products;
+      const setProductFavorite = React.useContext(ProductContext)
+        .toggleProductFavorite;
+
+      console.log('Products list');
+      console.log(productsList);
+
       return (
         // React.Fragment short hand <>...</>, alternative for [array elements]
         <>
@@ -277,6 +286,26 @@ export const HomePage = withRouter(
           </Helmet>
 
           {/* <NavBar /> */}
+
+          <div>
+            <h3>React hooks + Context API, alternative for Redux</h3>
+            {productsList.map(product => (
+              <div key={product.id}>
+                <div>Title: {product.title}</div>
+                <div>Title: {product.title}</div>
+                <div>Description: {product.description}</div>
+                <div>Favorite: {product.isFavorite ? 'OK' : 'No'}</div>
+                <button
+                  onClick={() => {
+                    setProductFavorite(product.id);
+                  }}
+                >
+                  Toggle favorite
+                </button>
+                <hr />
+              </div>
+            ))}
+          </div>
 
           <div>
             <h3>Redux Playground</h3>

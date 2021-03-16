@@ -15,6 +15,8 @@ import { NotFoundPage } from './containers/NotFoundPage/Loadable';
 import { AboutPage } from './containers/AboutPage';
 import asyncComponent from './hoc/asyncComponent/index';
 
+import ProductsProvider from '../context/products-context';
+
 const AsyncLazyPage = asyncComponent(() => {
   let lazyPromise = import('./containers/LazyPage');
   return lazyPromise;
@@ -65,13 +67,19 @@ export function App() {
         </ul>
       </StyledNav>
 
-      <Switch>
-        <Route exact path={process.env.PUBLIC_URL + '/'} component={HomePage} />
-        <Route exact path="/home" component={HomePage} />
-        <Route path="/about" component={AboutPage} />
-        <Route path="/lazy" component={AsyncLazyPage} />
-        <Route component={NotFoundPage} />
-      </Switch>
+      <ProductsProvider>
+        <Switch>
+          <Route
+            exact
+            path={process.env.PUBLIC_URL + '/'}
+            component={HomePage}
+          />
+          <Route exact path="/home" component={HomePage} />
+          <Route path="/about" component={AboutPage} />
+          <Route path="/lazy" component={AsyncLazyPage} />
+          <Route component={NotFoundPage} />
+        </Switch>
+      </ProductsProvider>
 
       {/* <GlobalStyle /> */}
     </BrowserRouter>
